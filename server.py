@@ -1,61 +1,91 @@
 from flask import Flask, jsonify
 import requests
 from datetime import datetime
+import pytz
 
 app = Flask(__name__)
+tz_manaus = pytz.timezone('America/Manaus')
 
-@app.route("/")
+@app.route('/')
 def home():
-    return "Dia 1 OK! Termux + Python funcionando."
+    return 'Dia 5! API Manaus v2.0 no ar.'
 
-@app.route("/hora")
+@app.route('/hora')
 def hora():
-    agora = datetime.now().strftime("%H:%M:%S")
+    agora = datetime.now(tz_manaus)
     return jsonify({
-        "cidade": "Manaus",
-        "hora": agora,
-        "dia": 3,
-        "status": "Consultando APIs"
+        'cidade': 'Manaus',
+        'hora': agora.strftime("%H:%M:%S"),
+        'data': agora.strftime("%d/%m/%Y"),
+        'dia_projeto': 5,
+        'status': 'Online',
+        'dev': 'ttheuszin'
     })
 
-@app.route("/cep/<numero>")
-def buscar_cep(numero):
+@app.route('/cep/<cep>')
+def buscar_cep(cep):
     try:
-        url = f"https://viacep.com.br/ws/{numero}/json/"
-        r = requests.get(url, timeout=5)
-        dados = r.json()
-        if "erro" in dados:
-            return jsonify({"erro": "CEP não encontrado"}), 404
+        url = f'https://viacep.com.br/ws/{cep}/json/'
+        resposta = requests.get(url, timeout=5)
+        dados = resposta.json()
+        
+        if 'erro' in dados:
+            return jsonify({'erro': 'CEP não encontrado'}), 404
+            
         return jsonify({
-            "cep": dados["cep"],
-            "logradouro": dados["logradouro"],
-            "bairro": dados["bairro"],
-            "cidade": dados["localidade"],
-            "uf": dados["uf"],
-            "ddd": dados["ddd"],
-            "dev": "Tu",
-            "consultado_em": datetime.now().strftime("%d/%m/%Y %H:%M")
+            'cep': dados['cep'],
+            'logradouro': dados['logradouro'],
+            'bairro': dados['bairro'],
+            'cidade': dados['localidade'],
+            'uf': dados['uf'],
+            'ddd': dados['ddd'],
+            'consultado_em': datetime.now(tz_manaus).strftime("%d/%m/%Y %H:%M"),
+            'dev': 'ttheuszin'
         })
     except:
-        return jsonify({"erro": "Falha na consulta"}), 500
+        return jsonify({'erro': 'Falha ao consultar CEP'}), 500
 
-@app.route("/clima")
-def clima_manaus():
+@app.route('/clima')
+def clima():
     try:
-        url = "https://api.open-meteo.com/v1/forecast?latitude=-3.1&longitude=-60.0&current_weather=true"
-        r = requests.get(url, timeout=5)
-        temp = r.json()["current_weather"]["temperature"]
+        url = 'https://api.open-meteo.com/v1/forecast?latitude=-3.1&longitude=-60.0&current_weather=true'
+        resposta = requests.get(url, timeout=5)
+        dados = resposta.json()
+        
+        temp = dados['current_weather']['temperature']
         return jsonify({
-            "cidade": "Manaus",
-            "temperatura": f"{temp}°C",
-            "status": "Calor que só",
-            "hora_consulta": datetime.now().strftime("%H:%M")
+            'cidade': 'Manaus',
+            'temperatura': f'{temp}°C',
+            'vento': f"{dados['current_weather']['windspeed']} km/h",
+            'atualizado_em': datetime.now(tz_manaus).strftime("%H:%M"),
+            'dev': 'ttheuszin'
         })
     except:
-        return jsonify({"erro": "Sem clima"}), 500
+        return jsonify({'erro': 'Sem clima - timeout Open-Meteo'}), 500
 
-if __name__ == "__main__":
-    print("Acessa no Chrome: http://127.0.0.1:5000")
-    import os
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
+@app.route('/github/<usuario>')
+def github(usuario):
+    try:
+        url = f'https://api.github.com/users/{usuario}'
+        resposta = requests.get(url, timeout=5)
+        dados = resposta.json()
+        
+        if dados.get('message') == 'Not Found':
+            return jsonify({'erro': 'Usuário não encontrado'}), 404
+            
+        return jsonify({
+            'login': dados['login'],
+            'nome': dados['name'],
+            'bio': dados['bio'],
+            'repos_publicos': dados['public_repos'],
+            'seguidores': dados['followers'],
+            'seguindo': dados['following'],
+            'avatar': dados['avatar_url'],
+            'criado_em': dados['created_at'][:10],
+            'dev': 'ttheuszin'
+        })
+    except:
+        return jsonify({'erro': 'Falha ao buscar GitHub'}), 500
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
