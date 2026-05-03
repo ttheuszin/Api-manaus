@@ -82,7 +82,7 @@ def github(usuario):
     try:
         url = f'https://api.github.com/users/{usuario}'
         headers = {'User-Agent': 'api-manaus-app'}
-        resposta = requests.get(url, headers=headers, timeout=5)
+        resposta = requests.get(url, headers=headers, timeout=15)
         dados = resposta.json()
         
         if dados.get('message') == 'Not Found':
