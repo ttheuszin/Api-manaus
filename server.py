@@ -116,6 +116,22 @@ def historico():
     conexao.close()
     lista = [{"login": d[0], "nome": d[1], "seguidores": d[2], "repos": d[3], "criado_em": d[4]} for d in devs]
     return jsonify({"total": len(lista), "devs": lista})
+@app.route("/")
+def home():
+    return {
+        "api": "Manaus API",
+        "status": "online",
+        "dev": "ttheuszin",
+        "cidade": "Manaus/AM",
+        "endpoints_funcionando": [
+            "/historico",
+            "/cep/69020001"
+        ],
+        "endpoints_instaveis_free": [
+            "/clima",
+            "/github/usuario"
+        ]
+    }
 if __name__ == "__main__":
     import os
     port = int(os.environ.get("PORT", 5000))
