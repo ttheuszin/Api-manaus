@@ -116,5 +116,7 @@ def historico():
     conexao.close()
     lista = [{"login": d[0], "nome": d[1], "seguidores": d[2], "repos": d[3], "criado_em": d[4]} for d in devs]
     return jsonify({"total": len(lista), "devs": lista})
-if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5000)
+if __name__ == "__main__":
+    import os
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
