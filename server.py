@@ -40,7 +40,7 @@ def hora():
 def buscar_cep(cep):
     try:
         url = f'https://viacep.com.br/ws/{cep}/json/'
-        resposta = requests.get(url, timeout=5)
+        resposta = requests.get(url, timeout=15)
         dados = resposta.json()
         
         if 'erro' in dados:
@@ -63,7 +63,7 @@ def buscar_cep(cep):
 def clima():
     try:
         url = 'https://api.open-meteo.com/v1/forecast?latitude=-3.1&longitude=-60.0&current_weather=true'
-        resposta = requests.get(url, timeout=5)
+        resposta = requests.get(url, timeout=15)
         dados = resposta.json()
         
         temp = dados['current_weather']['temperature']
