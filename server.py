@@ -117,7 +117,7 @@ def historico():
     lista = [{"login": d[0], "nome": d[1], "seguidores": d[2], "repos": d[3], "criado_em": d[4]} for d in devs]
     return jsonify({"total": len(lista), "devs": lista})
 @app.route("/")
-def home():
+def index():
     return {
         "api": "Manaus API",
         "status": "online",
