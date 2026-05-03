@@ -1,5 +1,6 @@
 import sqlite3
 from flask import Flask, jsonify
+from flask_cors import CORS
 import requests
 from datetime import datetime
 import pytz
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS devs (
 conexao.commit()
 conexao.close()
 app = Flask(__name__)
+CORS(app)
 tz_manaus = pytz.timezone('America/Manaus')
 
 
