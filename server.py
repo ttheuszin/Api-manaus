@@ -20,9 +20,6 @@ conexao.close()
 app = Flask(__name__)
 tz_manaus = pytz.timezone('America/Manaus')
 
-@app.route('/')
-def home():
-    return 'Dia 5! API Manaus v2.0 no ar.'
 
 @app.route('/hora')
 def hora():
